@@ -1,0 +1,29 @@
+inline-svg {
+    width: 24px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--grey-700);
+
+    &::before{
+        content: "";
+        display: block;
+        width: 100%;
+        padding-bottom: 100%;
+    }
+
+    svg {
+        position: absolute;
+        width: 75%;
+        height: 75%;
+        animation: spinner 900ms linear infinite;
+    }
+}
+@keyframes spinner {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
