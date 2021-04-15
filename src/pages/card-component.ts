@@ -2,6 +2,12 @@ import { html, render } from "lit-html";
 import css from "utils/css";
 import SuperComponet from "@codewithkyle/supercomponent";
 
+import TextNode from "./text-node";
+customElements.define("text-node", TextNode);
+
+import Draggable from "components/draggable";
+customElements.define("move-handle", Draggable);
+
 type Side = "left" | "right";
 
 type CardComponentState = {
@@ -53,9 +59,8 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
     private spawnTextNode:EventListener = (e:Event) => {
         const canvasEl = this.querySelector(`content-container[data-side="${this.model.contentMenuSide}"]`);
         const canvasBounds = canvasEl.getBoundingClientRect();
-        console.log(canvasBounds, this.scrollLeft);
-        let x = this.model.contextMenuPos[0] - canvasBounds.left - this.scrollLeft,
-            y = this.model.contextMenuPos[1] - canvasBounds.top - this.scrollTop;
+        let x = this.model.contextMenuPos[0] - canvasBounds.x - this.scrollLeft,
+            y = this.model.contextMenuPos[1] - canvasBounds.y - this.scrollTop;
         this.trigger("CLOSE");
         switch (this.model.contentMenuSide){
             case "left":
@@ -86,6 +91,16 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
         
     }
 
+    private renderTextNode(node){
+        return html`
+            <text-node data-top="${node.pos[1]}" data-left="${node.pos[0]}" style="top:0;left:0;width:${node.width}px;height:${node.height}px;transform: translate(${node.pos[0]}px, ${node.pos[1]}px);">
+                <textarea>${node.value}</textarea>
+                <move-handle class="top"></move-handle>
+                <move-handle class="left"></move-handle>
+            </text-node>
+        `;
+    }
+
     connected(){
         this.addEventListener("click", this.handleBaseClick);
     }
@@ -114,13 +129,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
                 <content-container data-side="left" @contextmenu=${this.openContextMenu}>
                     ${this.model.left.length ? 
                         html`
-                            ${this.model.left.map(node => {
-                                return html`
-                                    <text-node style="left:${node.pos[0]}px;top:${node.pos[1]}px;width:${node.width}px;height:${node.height}px;">
-                                        <textarea>${node.value}</textarea>
-                                    </text-node>
-                                `;
-                            })}
+                            ${this.model.left.map(node => this.renderTextNode(node))}
                         ` 
                         : 
                         html`<p class="font-bold font-grey-700 text-center w-300 absolute center events-none">Right click or tap and hold to begin.</p>`
@@ -128,13 +137,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
                 </content-container>
                 <content-container data-side="right" @contextmenu=${this.openContextMenu}>
                     ${this.model.right.length ? html`
-                        ${this.model.right.map(node => {
-                            return html`
-                                <text-node style="left:${node.pos[0]}px;top:${node.pos[1]}px;width:${node.width}px;height:${node.height}px;">
-                                    <textarea>${node.value}</textarea>
-                                </text-node>
-                            `;
-                        })}
+                        ${this.model.right.map(node => this.renderTextNode(node))}
                     `
                     :
                     html`<p class="font-bold font-grey-700 text-center w-300 absolute center events-none">Right click or tap and hold to begin.</p>`}
