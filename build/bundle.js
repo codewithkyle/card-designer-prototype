@@ -11,7 +11,6 @@ const install = require("esinstall").install;
         "@codewithkyle/router",
         "lit-html",
         "tooltipper",
-        "idb",
     ]);
     
     const libDir = path.join(cwd, "src", "lib");

@@ -5,7 +5,7 @@ ghPages.publish('public', {
         name: "Kyle Andrews",
         email: "codingwithkyle@gmail.com",
     },
-    repo: 'https://' + process.env.ACCESS_TOKEN +'@github.com/codewithkyle/flowable-app.git',
+    repo: 'https://' + process.env.ACCESS_TOKEN +'@github.com/codewithkyle/card-designer-prototype.git',
     silent: true
 }, (error)=>{
     if (error)
