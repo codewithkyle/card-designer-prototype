@@ -1,0 +1,22 @@
+text-node{
+    outline: 1px dashed var(--grey-300);
+    outline-offset: 4px;
+    position: absolute;
+    transition: all 75ms var(--ease-in-out);
+
+    &:hover,
+    &:focus-visible{
+        outline-color: var(--grey-500);
+    }
+
+    &:focus-within{
+        outline-color: var(--primary-500);
+    }
+
+    textarea{
+        resize: none;
+        font-size: 16px;
+        line-height: 1.618;
+        color: var(--grey-900);
+    }
+}
