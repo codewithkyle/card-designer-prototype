@@ -1,10 +1,8 @@
 import { configure, mount } from "@codewithkyle/router";
 
 configure({
-    "/": {
-        tagName: "home-page",
-        file: "/js/homepage.js",
-    },
+    "/card/{SLUG}": "card-component",
+    "/": "home-page",
     "404": "missing-page",
 });
 
