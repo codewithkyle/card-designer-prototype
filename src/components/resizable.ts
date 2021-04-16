@@ -65,6 +65,9 @@ export default class Resizable extends HTMLElement{
                     this.parentElement.style.height = `${height}px`;
                     break;
             }
+
+            // @ts-ignore
+            this.parentElement.checkOverflowStatus();
         }
     }
 

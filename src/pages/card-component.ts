@@ -91,18 +91,59 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
             default:
                 break;
         }
-        
+    }
+
+    private handleTextInput:EventListener = (e:KeyboardEvent) => {
+        if (e instanceof KeyboardEvent){
+            const target = e.currentTarget as HTMLTextAreaElement;
+            const key = e.key.toLowerCase();
+            const bounds = target.getBoundingClientRect();
+            const scrollHeight = Math.ceil(target.scrollHeight);
+            if (key === "enter" && scrollHeight > bounds.height){
+                const height = parseInt(target.parentElement.dataset.height) + (16 * 1.618);
+                target.parentElement.dataset.height = `${height}`;
+                target.parentElement.style.height = `${height}px`;
+            }
+            target.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: "auto"
+            });
+        }
+    }
+
+    private handlePaste:EventListener = (e:ClipboardEvent) => {
+        if (e instanceof ClipboardEvent){
+            const target = e.currentTarget as HTMLTextAreaElement;
+            // Paste event fires before DOM updates ¯\_(ツ)_/¯
+            setTimeout(()=>{
+                target.parentElement.checkOverflowStatus();
+            }, 150);
+        }
+    }
+
+    private autoResizeTextbox:EventListener = (e:Event) => {
+        const target = e.currentTarget as HTMLElement;
+        const textarea = target.parentElement.querySelector("textarea");
+        target.parentElement.dataset.height = `${Math.ceil(textarea.scrollHeight)}`;
+        target.parentElement.style.height = `${Math.ceil(textarea.scrollHeight)}px`;
+        target.parentElement.setAttribute("overflowing", "false");
     }
 
     private renderTextNode(node){
         return html`
             <text-node tabindex="0" data-top="${node.pos[1]}" data-left="${node.pos[0]}" data-width="${node.width}" data-height="${node.height}" style="top:0;left:0;width:${node.width}px;height:${node.height}px;transform: translate(${node.pos[0]}px, ${node.pos[1]}px);">
-                <textarea>${node.value}</textarea>
+                <textarea @paste=${this.handlePaste} @keydown=${this.handleTextInput}>${node.value}</textarea>
                 <resize-handle data-direction="y"></resize-handle>
                 <resize-handle data-direction="x"></resize-handle>
                 <resize-handle data-direction="both"></resize-handle>
                 <move-handle></move-handle>
                 <move-handle></move-handle>
+                <overflow-warning @click=${this.autoResizeTextbox} tabindex="0" title="Text box contains overflowing text">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </overflow-warning>
             </text-node>
         `;
     }
