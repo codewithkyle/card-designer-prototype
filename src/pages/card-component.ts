@@ -120,7 +120,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
         } else if (node.type === "text"){
             return html`
                 <text-node node tabindex="0" data-top="${node.pos[1]}" data-left="${node.pos[0]}" data-width="${node.width}" data-height="${node.height}" style="top:0;left:0;width:${node.width}px;height:${node.height}px;transform: translate(${node.pos[0]}px, ${node.pos[1]}px);">
-                    <node-wrapper>
+                    <node-wrapper data-angle="0">
                         <textarea>${node.value}</textarea>
                         <resize-handle data-direction="y"></resize-handle>
                         <resize-handle data-direction="x"></resize-handle>
@@ -144,7 +144,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
         } else if (node.type === "image"){
             return html`
                 <image-node node tabindex="0" data-top="${node.pos[1]}" data-left="${node.pos[0]}" data-width="${node.width}" data-height="${node.height}" style="top:0;left:0;width:${node.width}px;height:${node.height}px;transform: translate(${node.pos[0]}px, ${node.pos[1]}px);">
-                    <node-wrapper>
+                    <node-wrapper data-angle="0">
                         ${node.img}
                         <resize-handle data-direction="y"></resize-handle>
                         <resize-handle data-direction="x"></resize-handle>

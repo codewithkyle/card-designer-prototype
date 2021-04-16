@@ -1,5 +1,6 @@
 export default class Rotate extends HTMLElement{
     private rotating:boolean;
+    private startAngle:number;
 
     constructor(){
         super();
@@ -8,6 +9,21 @@ export default class Rotate extends HTMLElement{
 
     private handleMouseDown:EventListener = (e:MouseEvent|TouchEvent) => {
         this.rotating = true;
+        let currX, currY;
+        if (e instanceof MouseEvent){
+            currX = e.clientX;
+            currY = e.clientY;
+        }else if (e instanceof TouchEvent){
+            currX = e.touches[0].clientX;
+            currY = e.touches[0].clientY;
+        }
+        const target = this.parentElement;
+        const targetPos = this.getCenter(target);
+        const cursorPos = {
+            x: currX,
+            y: currY,
+        };
+        this.startAngle = (Math.atan2(cursorPos.y - targetPos.y, cursorPos.x - targetPos.x)) - parseFloat(target.dataset.angle);
     }
 
     private handleMouseUp:EventListener = () => {
@@ -51,9 +67,10 @@ export default class Rotate extends HTMLElement{
                 y: currY,
             };
 
-            const angle = (Math.atan2(cursorPos.y - targetPos.y, cursorPos.x - targetPos.x) * 180 / Math.PI);
+            const angle = (Math.atan2(cursorPos.y - targetPos.y, cursorPos.x - targetPos.x)) - this.startAngle;
 
-            target.style.transform = `rotate(${angle}deg)`;
+            target.style.transform = `rotate(${angle}rad)`;
+            target.dataset.angle = `${angle}`;
             target.parentElement.setAttribute("rotating", "true");
         }
     }
