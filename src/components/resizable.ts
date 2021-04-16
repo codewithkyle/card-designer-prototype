@@ -1,3 +1,5 @@
+import TextNode from "./text-node";
+
 export default class Resizable extends HTMLElement{
     private resizing:boolean;
     private pos1:number;
@@ -43,7 +45,7 @@ export default class Resizable extends HTMLElement{
                 this.pos3 = e.touches[0].clientX;
                 this.pos4 = e.touches[0].clientY;
             }
-            const target = this.parentElement.parentElement;
+            const target = this.closest("[node]") as HTMLElement;
 
             target.setAttribute("resizing", "true");
 
@@ -67,8 +69,9 @@ export default class Resizable extends HTMLElement{
                     break;
             }
 
-            // @ts-ignore
-            target.checkOverflowStatus();
+            if (target instanceof TextNode){
+                target.checkOverflowStatus();
+            }
         }
     }
 

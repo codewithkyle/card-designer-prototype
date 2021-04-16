@@ -27,7 +27,8 @@ export default class Draggable extends HTMLElement{
 
     private handleMouseUp:EventListener = () => {
         this.moving = false;
-        this.parentElement.parentElement.setAttribute("moving", "false");
+        const target = this.closest("[node]") as HTMLElement;
+        target.setAttribute("moving", "false");
     }
 
     private handleMouseMove:EventListener = (e:MouseEvent|TouchEvent) => {
@@ -44,8 +45,7 @@ export default class Draggable extends HTMLElement{
                 this.pos4 = e.touches[0].clientY;
             }
 
-            const target = this.parentElement.parentElement;
-            const bounds = target.getBoundingClientRect();
+            const target = this.closest("[node]") as HTMLElement;
             let top = parseInt(target.dataset.top) - this.pos2;
             let left = parseInt(target.dataset.left) - this.pos1;
 

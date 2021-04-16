@@ -2,7 +2,7 @@ import { html, render } from "lit-html";
 import css from "utils/css";
 import SuperComponet from "@codewithkyle/supercomponent";
 
-import TextNode from "./text-node";
+import TextNode from "components/text-node";
 customElements.define("text-node", TextNode);
 
 import Draggable from "components/draggable";
@@ -38,10 +38,10 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
         this.model = {
             left: [],
             right: [],
-            contextMenuPos: [],
+            contextMenuPos: [0,0],
             contentMenuSide: null,
         };
-        css(["card-canvas", "card-editor-bar", "buttons", "context-menu", "text-node"]).then(() => {
+        css(["card-canvas", "card-editor-bar", "buttons", "context-menu", "text-node", "image-node"]).then(() => {
             this.render();
         });
     }
@@ -67,11 +67,11 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
         const canvasBounds = canvasEl.getBoundingClientRect();
         let x = this.model.contextMenuPos[0] - canvasBounds.x - this.scrollLeft,
             y = this.model.contextMenuPos[1] - canvasBounds.y - this.scrollTop;
-        this.trigger("CLOSE");
         switch (this.model.contentMenuSide){
             case "left":
                 this.update({
                     left: [...this.model.left, {
+                        type: "text",
                         value: "Lorem ipsum",
                         pos: [x, y],
                         width: 300,
@@ -83,6 +83,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
             case "right":
                 this.update({
                     right: [...this.model.right, {
+                        type: "text",
                         value: "Lorem ipsum",
                         pos: [x, y],
                         width: 300,
@@ -94,44 +95,6 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
             default:
                 break;
         }
-    }
-
-    private handleTextInput:EventListener = (e:KeyboardEvent) => {
-        if (e instanceof KeyboardEvent){
-            const target = e.currentTarget as HTMLTextAreaElement;
-            const key = e.key.toLowerCase();
-            const bounds = target.getBoundingClientRect();
-            const scrollHeight = Math.ceil(target.scrollHeight);
-            if (key === "enter" && scrollHeight > bounds.height){
-                const height = parseInt(target.parentElement.dataset.height) + (16 * 1.618);
-                target.parentElement.dataset.height = `${height}`;
-                target.parentElement.style.height = `${height}px`;
-            }
-            target.scrollTo({
-                top: 0,
-                left: 0,
-                behavior: "auto"
-            });
-        }
-    }
-
-    private handlePaste:EventListener = (e:ClipboardEvent) => {
-        if (e instanceof ClipboardEvent){
-            const target = e.currentTarget as HTMLTextAreaElement;
-            // Paste event fires before DOM updates ¯\_(ツ)_/¯
-            setTimeout(()=>{
-                // @ts-ignore
-                target.parentElement.checkOverflowStatus();
-            }, 150);
-        }
-    }
-
-    private autoResizeTextbox:EventListener = (e:Event) => {
-        const target = e.currentTarget as HTMLElement;
-        const textarea = target.parentElement.querySelector("textarea");
-        target.parentElement.dataset.height = `${Math.ceil(textarea.scrollHeight)}`;
-        target.parentElement.style.height = `${Math.ceil(textarea.scrollHeight)}px`;
-        target.parentElement.setAttribute("overflowing", "false");
     }
 
     private deleteNode:EventListener = (e:Event)=>{
@@ -151,33 +114,52 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
         this.update(updatedData);
     }
 
-    private renderTextNode(node, index, side){
+    private renderNode(node, index, side){
         if (node === null){
             return "";
+        } else if (node.type === "text"){
+            return html`
+                <text-node node tabindex="0" data-top="${node.pos[1]}" data-left="${node.pos[0]}" data-width="${node.width}" data-height="${node.height}" style="top:0;left:0;width:${node.width}px;height:${node.height}px;transform: translate(${node.pos[0]}px, ${node.pos[1]}px);">
+                    <node-wrapper>
+                        <textarea>${node.value}</textarea>
+                        <resize-handle data-direction="y"></resize-handle>
+                        <resize-handle data-direction="x"></resize-handle>
+                        <resize-handle data-direction="both"></resize-handle>
+                        <move-handle></move-handle>
+                        <move-handle></move-handle>
+                        <rotate-handle></rotate-handle>
+                        <overflow-warning tabindex="0" title="Text box contains overflowing text">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </overflow-warning>
+                        <delete-button tabindex="0" title="Delete text box" @click=${this.deleteNode} data-index="${index}" data-side="${side}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </delete-button>
+                    </node-wrapper>
+                </text-node>
+            `;
+        } else if (node.type === "image"){
+            return html`
+                <image-node node tabindex="0" data-top="${node.pos[1]}" data-left="${node.pos[0]}" data-width="${node.width}" data-height="${node.height}" style="top:0;left:0;width:${node.width}px;height:${node.height}px;transform: translate(${node.pos[0]}px, ${node.pos[1]}px);">
+                    <node-wrapper>
+                        ${node.img}
+                        <resize-handle data-direction="y"></resize-handle>
+                        <resize-handle data-direction="x"></resize-handle>
+                        <resize-handle data-direction="both"></resize-handle>
+                        <move-handle></move-handle>
+                        <rotate-handle></rotate-handle>
+                        <delete-button tabindex="0" title="Delete text box" @click=${this.deleteNode} data-index="${index}" data-side="${side}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </delete-button>
+                    </node-wrapper>
+                </image-node>
+            `;
         }
-        return html`
-            <text-node tabindex="0" data-top="${node.pos[1]}" data-left="${node.pos[0]}" data-width="${node.width}" data-height="${node.height}" style="top:0;left:0;width:${node.width}px;height:${node.height}px;transform: translate(${node.pos[0]}px, ${node.pos[1]}px);">
-                <node-wrapper>
-                    <textarea @paste=${this.handlePaste} @keydown=${this.handleTextInput}>${node.value}</textarea>
-                    <resize-handle data-direction="y"></resize-handle>
-                    <resize-handle data-direction="x"></resize-handle>
-                    <resize-handle data-direction="both"></resize-handle>
-                    <move-handle></move-handle>
-                    <move-handle></move-handle>
-                    <rotate-handle></rotate-handle>
-                </node-wrapper>
-                <overflow-warning @click=${this.autoResizeTextbox} tabindex="0" title="Text box contains overflowing text">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </overflow-warning>
-                <delete-button tabindex="0" title="Delete text box" @click=${this.deleteNode} data-index="${index}" data-side="${side}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                </delete-button>
-            </text-node>
-        `;
     }
 
     private checkOnlyNull(side:"right"|"left"):boolean{
@@ -203,6 +185,59 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
                 break;
         }
         return containsNonNullEntities;
+    }
+
+    private handleFile:EventListener = (e:Event) => {
+        const target = e.currentTarget as HTMLInputElement;
+        var reader = new FileReader();
+        reader.addEventListener("load", (event) => {
+            const image = new Image();
+            image.title = target.files[0].name;
+            // @ts-ignore
+            image.src = event.target.result;
+            image.draggable = false;
+            const canvasEl = this.querySelector(`content-container[data-side="${this.model.contentMenuSide}"]`);
+            const canvasBounds = canvasEl.getBoundingClientRect();
+            let x = this.model.contextMenuPos[0] - canvasBounds.x - this.scrollLeft,
+                y = this.model.contextMenuPos[1] - canvasBounds.y - this.scrollTop;
+            switch (this.model.contentMenuSide){
+                case "left":
+                    this.update({
+                        left: [...this.model.left, {
+                            type: "image",
+                            img: image,
+                            pos: [x, y],
+                            width: 150,
+                            height: 150
+                        }],
+                        contextMenuPos: [0,0],
+                    });
+                    break;
+                case "right":
+                    this.update({
+                        right: [...this.model.right, {
+                            type: "image",
+                            img: image,
+                            pos: [x, y],
+                            width: 150,
+                            height: 150
+                        }],
+                        contextMenuPos: [0,0],
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }, false);
+        reader.readAsDataURL(target.files[0]);
+    }
+
+    private spawnImageNode:EventListener = (e:Event) => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = "image/*";
+        input.addEventListener("change", this.handleFile);
+        input.click();
     }
 
     connected(){
@@ -233,7 +268,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
                 <content-container data-side="left" @contextmenu=${this.openContextMenu}>
                     ${this.checkOnlyNull("left") ? 
                         html`
-                            ${this.model.left.map((node, index) => this.renderTextNode(node, index, "left"))}
+                            ${this.model.left.map((node, index) => this.renderNode(node, index, "left"))}
                         ` 
                         : 
                         html`<p class="font-bold font-grey-700 text-center w-300 absolute center events-none">Right click or tap and hold to begin.</p>`
@@ -241,7 +276,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
                 </content-container>
                 <content-container data-side="right" @contextmenu=${this.openContextMenu}>
                     ${this.checkOnlyNull("right") ? html`
-                        ${this.model.right.map((node, index) => this.renderTextNode(node, index, "right"))}
+                        ${this.model.right.map((node, index) => this.renderNode(node, index, "right"))}
                     `
                     :
                     html`<p class="font-bold font-grey-700 text-center w-300 absolute center events-none">Right click or tap and hold to begin.</p>`}
@@ -263,7 +298,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
                             </svg>
                         </i>    
                         Add Doodles</button>
-                    <button @click=${this.spawnTextNode} class="bttn w-full" kind="text" color="grey" shape="rounded" icon="left">
+                    <button @click=${this.spawnImageNode} class="bttn w-full" kind="text" color="grey" shape="rounded" icon="left">
                         <i>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
