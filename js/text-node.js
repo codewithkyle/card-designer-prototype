@@ -1,0 +1,1 @@
+class t extends HTMLElement{constructor(){super();this.textarea=this.querySelector("textarea")}checkOverflowStatus(){const e=this.textarea.getBoundingClientRect();Math.ceil(this.textarea.scrollHeight)>e.height?this.textarea.parentElement.setAttribute("overflowing","true"):this.textarea.parentElement.setAttribute("overflowing","false")}}export{t as default};

@@ -1,0 +1,18 @@
+{
+	"version": 1,
+	"tables": [
+		{
+			"name": "projects",
+			"keyPath": "uid",
+			"columns": [
+				{
+					"key": "uid",
+					"unique": true
+				},
+				{
+					"key": "name"
+				}
+			]
+		}
+	]
+}

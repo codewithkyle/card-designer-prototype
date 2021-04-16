@@ -1,0 +1,32 @@
+home-page {
+  display: block;
+  width: 100%;
+}
+
+home-page .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 300px));
+  gap: 2rem;
+  margin: 0 auto 6rem;
+  width: calc(300px * 3 + 2rem * 2);
+  max-width: calc(100% - 2rem);
+  place-content: center;
+}
+
+home-page .cards a:hover img, home-page .cards a:focus-visible img {
+  transform: scale(1.025);
+  transition: transform 300ms var(--ease-in) !important;
+}
+
+home-page .cards a:focus-visible img {
+  outline: 1px solid var(--black);
+  outline-offset: 3px;
+}
+
+home-page .cards img {
+  aspect-ratio: 11/16;
+  display: inline-block;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  width: 100%;
+}

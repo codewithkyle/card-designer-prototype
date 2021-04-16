@@ -1,0 +1,40 @@
+card-component {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: scroll;
+  display: block;
+}
+
+card-component card-canvas {
+  background-color: var(--white);
+  box-shadow: var(--shadow-lg);
+  width: 1200px;
+  height: 873px;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin: 8rem auto;
+  border: 1px solid var(--grey-200);
+}
+
+card-component card-canvas content-container {
+  width: 552px;
+  height: 803px;
+  display: inline-block;
+  border: 1px dashed var(--grey-300);
+  overflow: hidden;
+}
+
+card-component card-canvas content-container:hover, card-component card-canvas content-container:focus-within {
+  border-color: var(--grey-500);
+}
+
+card-component card-canvas content-container > * {
+  z-index: 1;
+}
+
+card-component card-canvas content-container > *:active, card-component card-canvas content-container > *:focus-within {
+  z-index: 2;
+}
