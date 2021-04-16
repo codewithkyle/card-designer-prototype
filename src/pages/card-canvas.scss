@@ -15,17 +15,27 @@ card-component{
         grid-template-columns: 1fr 1fr;
         gap: 32px;
         margin: 8rem auto;
+        border: 1px solid var(--grey-200);
 
         content-container{
             width: 552px;
             height: 803px;
             display: inline-block;
-            border: 1px dashed var(--grey-400);
+            border: 1px dashed var(--grey-300);
             overflow: hidden;
 
             &:hover,
             &:focus-within{
                 border-color: var(--grey-500);
+            }
+
+            & > * {
+                z-index: 1;
+
+                &:active,
+                &:focus-within{
+                    z-index: 2;
+                }
             }
         }
     }

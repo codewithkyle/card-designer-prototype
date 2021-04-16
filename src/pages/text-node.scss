@@ -1,24 +1,29 @@
 text-node{
-    outline: 1px dashed var(--grey-300);
-    outline-offset: 4px;
     position: absolute;
     transition: all 0ms 0ms linear;
 
     &:hover,
     &:focus-visible{
-        outline-color: var(--grey-500);
+        node-wrapper{
+            outline-color: var(--grey-500);
+        }
     }
 
     &:focus-within{
-        outline-color: var(--primary-500);
+        node-wrapper{
+            outline-color: var(--primary-500);
+        }
     }
 
     &:active{
-        outline-color: var(--primary-500);
+        node-wrapper{
+            outline-color: var(--primary-500);
+        }
     }
 
     &[moving="true"],
-    &[resizing="true"]{
+    &[resizing="true"],
+    &[rotating="true"]{
         pointer-events: none;
         user-select: none;
         cursor: move;
@@ -32,6 +37,17 @@ text-node{
         }
     }
 
+    node-wrapper{
+        outline: 1px dashed var(--grey-300);
+        outline-offset: 4px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: center center;
+    }
+
     textarea{
         resize: none;
         font-size: 16px;
@@ -41,6 +57,7 @@ text-node{
         height: 100%;
         overflow: hidden;
         background: transparent;
+        transform-origin: center;
     }
 
     move-handle{
@@ -124,5 +141,14 @@ text-node{
             width: 12px;
             height: 12px;
         }
+    }
+
+    rotate-handle{
+        position: absolute;
+        right: -8px;
+        top: -16px;
+        width: 16px;
+        height: 16px;
+        cursor: url("/svgs/rotate.svg"), grab;
     }
 }

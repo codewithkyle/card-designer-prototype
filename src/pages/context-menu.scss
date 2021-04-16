@@ -6,6 +6,7 @@ context-menu{
     box-shadow: var(--shadow-md);
     width: 175px;
     border: 1px solid var(--grey-300);
+    z-index: 3;
 
     button{
         justify-content: flex-start !important;

@@ -27,7 +27,7 @@ export default class Resizable extends HTMLElement{
 
     private handleMouseUp:EventListener = () => {
         this.resizing = false;
-        this.parentElement.setAttribute("resizing", "false");
+        this.parentElement.parentElement.setAttribute("resizing", "false");
     }
 
     private handleMouseMove:EventListener = (e:MouseEvent|TouchEvent) => {
@@ -43,31 +43,32 @@ export default class Resizable extends HTMLElement{
                 this.pos3 = e.touches[0].clientX;
                 this.pos4 = e.touches[0].clientY;
             }
+            const target = this.parentElement.parentElement;
 
-            this.parentElement.setAttribute("resizing", "true");
+            target.setAttribute("resizing", "true");
 
-            let height = parseInt(this.parentElement.dataset.height) - this.pos2;
-            let width = parseInt(this.parentElement.dataset.width) - this.pos1;
+            let height = parseInt(target.dataset.height) - this.pos2;
+            let width = parseInt(target.dataset.width) - this.pos1;
 
             switch (this.dataset?.direction){
                 case "x":
-                    this.parentElement.style.width = `${width}px`;
-                    this.parentElement.dataset.width = `${width}`;
+                    target.style.width = `${width}px`;
+                    target.dataset.width = `${width}`;
                     break;
                 case "y":
-                    this.parentElement.style.height = `${height}px`;
-                    this.parentElement.dataset.height = `${height}`;
+                    target.style.height = `${height}px`;
+                    target.dataset.height = `${height}`;
                     break;
                 default:
-                    this.parentElement.style.width = `${width}px`;
-                    this.parentElement.dataset.width = `${width}`;
-                    this.parentElement.dataset.height = `${height}`;
-                    this.parentElement.style.height = `${height}px`;
+                    target.style.width = `${width}px`;
+                    target.dataset.width = `${width}`;
+                    target.dataset.height = `${height}`;
+                    target.style.height = `${height}px`;
                     break;
             }
 
             // @ts-ignore
-            this.parentElement.checkOverflowStatus();
+            target.checkOverflowStatus();
         }
     }
 

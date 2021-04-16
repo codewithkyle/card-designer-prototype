@@ -11,6 +11,9 @@ customElements.define("move-handle", Draggable);
 import Resizable from "components/resizable";
 customElements.define("resize-handle", Resizable);
 
+import Rotate from "components/rotate";
+customElements.define("rotate-handle", Rotate);
+
 type Side = "left" | "right";
 
 type CardComponentState = {
@@ -117,6 +120,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
             const target = e.currentTarget as HTMLTextAreaElement;
             // Paste event fires before DOM updates ¯\_(ツ)_/¯
             setTimeout(()=>{
+                // @ts-ignore
                 target.parentElement.checkOverflowStatus();
             }, 150);
         }
@@ -133,12 +137,15 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
     private renderTextNode(node){
         return html`
             <text-node tabindex="0" data-top="${node.pos[1]}" data-left="${node.pos[0]}" data-width="${node.width}" data-height="${node.height}" style="top:0;left:0;width:${node.width}px;height:${node.height}px;transform: translate(${node.pos[0]}px, ${node.pos[1]}px);">
-                <textarea @paste=${this.handlePaste} @keydown=${this.handleTextInput}>${node.value}</textarea>
-                <resize-handle data-direction="y"></resize-handle>
-                <resize-handle data-direction="x"></resize-handle>
-                <resize-handle data-direction="both"></resize-handle>
-                <move-handle></move-handle>
-                <move-handle></move-handle>
+                <node-wrapper>
+                    <textarea @paste=${this.handlePaste} @keydown=${this.handleTextInput}>${node.value}</textarea>
+                    <resize-handle data-direction="y"></resize-handle>
+                    <resize-handle data-direction="x"></resize-handle>
+                    <resize-handle data-direction="both"></resize-handle>
+                    <move-handle></move-handle>
+                    <move-handle></move-handle>
+                    <rotate-handle></rotate-handle>
+                </node-wrapper>
                 <overflow-warning @click=${this.autoResizeTextbox} tabindex="0" title="Text box contains overflowing text">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
