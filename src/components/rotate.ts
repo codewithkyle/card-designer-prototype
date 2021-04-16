@@ -31,8 +31,9 @@ export default class Rotate extends HTMLElement{
             const centerX = left + width / 2;
             const centerY = top + height / 2;
 
-            const angle = Math.atan2(currY - centerY, currX - centerX);
-            this.parentElement.style.transform = `rotate(${angle}rad)`;
+            const angle = Math.atan2(currY - centerY, currX - centerX) * 180 / Math.PI;
+            // TODO: fudge angle to reduce pop -- by height?
+            this.parentElement.style.transform = `rotate(${angle}deg)`;
 
             this.parentElement.parentElement.setAttribute("rotating", "true");
         }

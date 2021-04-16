@@ -134,7 +134,27 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
         target.parentElement.setAttribute("overflowing", "false");
     }
 
-    private renderTextNode(node){
+    private deleteNode:EventListener = (e:Event)=>{
+        const target = e.currentTarget as HTMLElement;
+        const index = parseInt(target.dataset.index);
+        const updatedData = {...this.model};
+        switch (target.dataset.side){
+            case "left":
+                updatedData.left.splice(index, 1, null);
+                break;
+            case "right":
+                updatedData.right.splice(index, 1, null);
+                break;
+            default:
+                break;
+        }
+        this.update(updatedData);
+    }
+
+    private renderTextNode(node, index, side){
+        if (node === null){
+            return "";
+        }
         return html`
             <text-node tabindex="0" data-top="${node.pos[1]}" data-left="${node.pos[0]}" data-width="${node.width}" data-height="${node.height}" style="top:0;left:0;width:${node.width}px;height:${node.height}px;transform: translate(${node.pos[0]}px, ${node.pos[1]}px);">
                 <node-wrapper>
@@ -151,8 +171,38 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                 </overflow-warning>
+                <delete-button tabindex="0" title="Delete text box" @click=${this.deleteNode} data-index="${index}" data-side="${side}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </delete-button>
             </text-node>
         `;
+    }
+
+    private checkOnlyNull(side:"right"|"left"):boolean{
+        let containsNonNullEntities = false;
+        switch(side){
+            case "left":
+                for (let i = 0; i < this.model.left.length; i++){
+                    if (this.model.left[i] !== null){
+                        containsNonNullEntities = true;
+                        break;
+                    }
+                }
+                break;
+            case "right":
+                for (let i = 0; i < this.model.right.length; i++){
+                    if (this.model.right[i] !== null){
+                        containsNonNullEntities = true;
+                        break;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        return containsNonNullEntities;
     }
 
     connected(){
@@ -181,17 +231,17 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
             </card-editor-bar>
             <card-canvas>
                 <content-container data-side="left" @contextmenu=${this.openContextMenu}>
-                    ${this.model.left.length ? 
+                    ${this.checkOnlyNull("left") ? 
                         html`
-                            ${this.model.left.map(node => this.renderTextNode(node))}
+                            ${this.model.left.map((node, index) => this.renderTextNode(node, index, "left"))}
                         ` 
                         : 
                         html`<p class="font-bold font-grey-700 text-center w-300 absolute center events-none">Right click or tap and hold to begin.</p>`
                     }
                 </content-container>
                 <content-container data-side="right" @contextmenu=${this.openContextMenu}>
-                    ${this.model.right.length ? html`
-                        ${this.model.right.map(node => this.renderTextNode(node))}
+                    ${this.checkOnlyNull("right") ? html`
+                        ${this.model.right.map((node, index) => this.renderTextNode(node, index, "right"))}
                     `
                     :
                     html`<p class="font-bold font-grey-700 text-center w-300 absolute center events-none">Right click or tap and hold to begin.</p>`}
