@@ -8,6 +8,9 @@ customElements.define("text-node", TextNode);
 import Draggable from "components/draggable";
 customElements.define("move-handle", Draggable);
 
+import Resizable from "components/resizable";
+customElements.define("resize-handle", Resizable);
+
 type Side = "left" | "right";
 
 type CardComponentState = {
@@ -93,10 +96,13 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
 
     private renderTextNode(node){
         return html`
-            <text-node data-top="${node.pos[1]}" data-left="${node.pos[0]}" style="top:0;left:0;width:${node.width}px;height:${node.height}px;transform: translate(${node.pos[0]}px, ${node.pos[1]}px);">
+            <text-node tabindex="0" data-top="${node.pos[1]}" data-left="${node.pos[0]}" data-width="${node.width}" data-height="${node.height}" style="top:0;left:0;width:${node.width}px;height:${node.height}px;transform: translate(${node.pos[0]}px, ${node.pos[1]}px);">
                 <textarea>${node.value}</textarea>
-                <move-handle class="top"></move-handle>
-                <move-handle class="left"></move-handle>
+                <resize-handle data-direction="y"></resize-handle>
+                <resize-handle data-direction="x"></resize-handle>
+                <resize-handle data-direction="both"></resize-handle>
+                <move-handle></move-handle>
+                <move-handle></move-handle>
             </text-node>
         `;
     }

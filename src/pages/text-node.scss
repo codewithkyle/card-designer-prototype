@@ -13,7 +13,12 @@ text-node{
         outline-color: var(--primary-500);
     }
 
-    &[moving="true"]{
+    &:active{
+        outline-color: var(--primary-500);
+    }
+
+    &[moving="true"],
+    &[resizing="true"]{
         pointer-events: none;
         user-select: none;
         cursor: move;
@@ -36,18 +41,46 @@ text-node{
         position: absolute;
         cursor: move;
 
-        &.top{
+        &:first-of-type{
             width: calc(100% + 16px);
             height: 8px;
             top: -8px;
             left: -8px;
         }
 
-        &.left{
+        &:last-of-type{
             height: calc(100% + 16px);
             width: 8px;
             top: -8px;
             left: -8px;
+        }
+    }
+
+    resize-handle{
+        position: absolute;
+
+        &:nth-of-type(1){
+            cursor: ns-resize;
+            width: calc(100% + 16px);
+            height: 8px;
+            bottom: -8px;
+            right: -8px;
+        }
+
+        &:nth-of-type(2){
+            cursor: ew-resize;
+            height: calc(100% + 16px);
+            width: 8px;
+            bottom: -8px;
+            right: -8px;
+        }
+
+        &:nth-of-type(3){
+            cursor: nwse-resize;
+            height: 8px;
+            width: 8px;
+            bottom: -8px;
+            right: -8px;
         }
     }
 }
