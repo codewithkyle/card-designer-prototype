@@ -22,7 +22,7 @@ export default class TextNode extends HTMLElement{
             const bounds = target.getBoundingClientRect();
             const scrollHeight = Math.ceil(target.scrollHeight);
             if (key === "enter" && scrollHeight > bounds.height){
-                const height = parseInt(this.dataset.height) + (16 * 1.618);
+                const height = parseInt(this.dataset.height) + (24 * 1.618);
                 this.dataset.height = `${height}`;
                 this.style.height = `${height}px`;
             }

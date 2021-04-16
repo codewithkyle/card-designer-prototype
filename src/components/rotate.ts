@@ -15,6 +15,23 @@ export default class Rotate extends HTMLElement{
         this.parentElement.parentElement.setAttribute("rotating", "false");
     }
 
+    private getCenter(el){
+        const {left, top, width, height} = el.getBoundingClientRect();
+        const centerX = left + width / 2;
+        const centerY = top + height / 2;
+        return {
+            x: centerX,
+            y: centerY,
+        };
+    }
+    
+    private calcOffsetAngle(p1,p2,p3){
+        const p12 = Math.sqrt(Math.pow((p1.x - p2.x),2) + Math.pow((p1.y - p2.y),2));
+        const p13 = Math.sqrt(Math.pow((p1.x - p3.x),2) + Math.pow((p1.y - p3.y),2));
+        const p23 = Math.sqrt(Math.pow((p2.x - p3.x),2) + Math.pow((p2.y - p3.y),2));
+        return Math.acos(((Math.pow(p12, 2)) + (Math.pow(p13, 2)) - (Math.pow(p23, 2))) / (2 * p12 * p13));
+    }
+
     private handleMouseMove:EventListener = (e:MouseEvent|TouchEvent) => {
         if (this.rotating){
             let currX, currY;
@@ -27,15 +44,17 @@ export default class Rotate extends HTMLElement{
             }
 
             const target = this.parentElement;
-            const {left, top, width, height} = target.getBoundingClientRect();
-            const centerX = left + width / 2;
-            const centerY = top + height / 2;
+            const targetPos = this.getCenter(target);
+            const handlePos = this.getCenter(this);
+            const cursorPos = {
+                x: currX,
+                y: currY,
+            };
 
-            const angle = Math.atan2(currY - centerY, currX - centerX) * 180 / Math.PI;
-            // TODO: fudge angle to reduce pop -- by height?
-            this.parentElement.style.transform = `rotate(${angle}deg)`;
+            const angle = (Math.atan2(cursorPos.y - targetPos.y, cursorPos.x - targetPos.x) * 180 / Math.PI);
 
-            this.parentElement.parentElement.setAttribute("rotating", "true");
+            target.style.transform = `rotate(${angle}deg)`;
+            target.parentElement.setAttribute("rotating", "true");
         }
     }
 

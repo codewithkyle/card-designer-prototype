@@ -41,7 +41,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
             contextMenuPos: [0,0],
             contentMenuSide: null,
         };
-        css(["card-canvas", "card-editor-bar", "buttons", "context-menu", "text-node", "image-node"]).then(() => {
+        css(["card-canvas", "card-editor-bar", "buttons", "context-menu", "text-node", "image-node", "fonts"]).then(() => {
             this.render();
         });
     }
@@ -271,7 +271,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
                             ${this.model.left.map((node, index) => this.renderNode(node, index, "left"))}
                         ` 
                         : 
-                        html`<p class="font-bold font-grey-700 text-center w-300 absolute center events-none">Right click or tap and hold to begin.</p>`
+                        html`<p class="font-bold font-grey-700 text-center w-300 absolute center events-none select-none">Right click or tap and hold to begin.</p>`
                     }
                 </content-container>
                 <content-container data-side="right" @contextmenu=${this.openContextMenu}>
@@ -279,7 +279,7 @@ export default class CardComponent extends SuperComponet<CardComponentState>{
                         ${this.model.right.map((node, index) => this.renderNode(node, index, "right"))}
                     `
                     :
-                    html`<p class="font-bold font-grey-700 text-center w-300 absolute center events-none">Right click or tap and hold to begin.</p>`}
+                    html`<p class="font-bold font-grey-700 text-center w-300 absolute center events-none select-none">Right click or tap and hold to begin.</p>`}
                 </content-container>
             </card-canvas>
             ${this.state === "CONTEXT_OPEN" ? html`
