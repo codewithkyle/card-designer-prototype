@@ -50,7 +50,7 @@ text-node node-wrapper {
 
 text-node textarea {
   resize: none;
-  font-size: 16px;
+  font-size: 24px;
   line-height: 1.618;
   color: var(--grey-900);
   width: 100%;
@@ -58,6 +58,7 @@ text-node textarea {
   overflow: hidden;
   background: transparent;
   transform-origin: center;
+  font-family: "jenna-sue";
 }
 
 text-node move-handle {

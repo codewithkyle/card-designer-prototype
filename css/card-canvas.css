@@ -17,6 +17,7 @@ card-component card-canvas {
   gap: 32px;
   margin: 8rem auto;
   border: 1px solid var(--grey-200);
+  overscroll-behavior: contain;
 }
 
 card-component card-canvas content-container {
